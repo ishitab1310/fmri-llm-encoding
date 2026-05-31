@@ -1,0 +1,17 @@
+#!/bin/bash
+#SBATCH -A research
+#SBATCH --job-name=llada_enc
+#SBATCH --partition=u22
+#SBATCH -c 10
+#SBATCH --mem-per-cpu=4G
+#SBATCH --time=2:00:00
+#SBATCH --output=/share1/ishita/enc_%j.out
+#SBATCH --error=/share1/ishita/enc_%j.err
+
+echo "START Job $SLURM_JOB_ID on $SLURM_NODELIST $(date)"
+PYTHON=/home2/ishita/miniconda3/envs/a3_llada/bin/python3
+echo "Python: $($PYTHON --version 2>&1)"
+echo "Features: $(find /share1/ishita/features_llada_final -name 'meta.json' | wc -l)"
+mkdir -p /share1/ishita/results_llada
+$PYTHON -u /home2/ishita/a3_project/scripts/run_encoding_partial.py
+echo "DONE $(date)"

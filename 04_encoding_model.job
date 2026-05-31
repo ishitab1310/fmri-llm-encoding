@@ -1,0 +1,37 @@
+#!/bin/bash
+#SBATCH -A $USER
+#SBATCH --job-name=a3_encoding
+#SBATCH --partition=long
+#SBATCH --gres=gpu:0
+#SBATCH -c 20
+#SBATCH --mem-per-cpu=4G
+#SBATCH --time=2-00:00:00
+#SBATCH --output=/home/%u/a3_project/logs/encoding_%j.out
+#SBATCH --error=/home/%u/a3_project/logs/encoding_%j.err
+#SBATCH --mail-type=END,FAIL
+
+# =============================================================================
+# STEP 4: Encoding Model (ridge regression, CPU only)
+# Submit with: sbatch 04_encoding_model.job
+# Runs: EN layer x lag search -> finds BEST_LAYER, BEST_LAG
+#       Then: EN + FR transfer experiment
+# =============================================================================
+
+echo "=== A3 Encoding Model ==="
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node: $SLURM_NODELIST"
+echo "CPUs: $SLURM_CPUS_PER_TASK"
+echo "Start: $(date)"
+
+source $HOME/miniconda3/etc/profile.d/conda.sh
+conda activate a3_llada
+
+python3 $HOME/a3_project/scripts/encoding_model.py \
+    --data_dir    /share1/$USER/ds003643 \
+    --feat_dir    /share1/$USER/features \
+    --results_dir /share1/$USER/results \
+    --n_jobs      $SLURM_CPUS_PER_TASK
+
+echo ""
+echo "End: $(date)"
+echo "=== Encoding done ==="

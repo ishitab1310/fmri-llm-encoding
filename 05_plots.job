@@ -1,0 +1,18 @@
+#!/bin/bash
+#SBATCH -A $USER
+#SBATCH --job-name=a3_plots
+#SBATCH --partition=long
+#SBATCH -c 4
+#SBATCH --mem-per-cpu=4G
+#SBATCH --time=1:00:00
+#SBATCH --output=/home/%u/a3_project/logs/plots_%j.out
+#SBATCH --error=/home/%u/a3_project/logs/plots_%j.err
+
+source $HOME/miniconda3/etc/profile.d/conda.sh
+conda activate a3_llada
+
+python3 $HOME/a3_project/scripts/plots.py \
+    --results_dir /share1/$USER/results \
+    --plots_dir   /share1/$USER/results/plots
+
+echo "Plots done."

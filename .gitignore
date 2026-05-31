@@ -1,0 +1,13 @@
+﻿# Private source repo - do not commit
+team11-temp/
+
+# fMRI data
+derivatives/
+sub-*/
+*.nii
+*.nii.gz
+
+# Python
+__pycache__/
+*.pyc
+.env

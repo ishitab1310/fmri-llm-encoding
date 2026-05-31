@@ -1,0 +1,73 @@
+#!/bin/bash
+#SBATCH -A research
+#SBATCH --job-name=llama_feat
+#SBATCH --partition=u22
+#SBATCH --gres=gpu:1
+#SBATCH -c 10
+#SBATCH --mem-per-cpu=4G
+#SBATCH --time=6:00:00
+#SBATCH --output=/home2/ishita/a3_project/logs/llama_features_%j.out
+#SBATCH --error=/home2/ishita/a3_project/logs/llama_features_%j.err
+
+echo "=== Llama-3.2-3B Feature Extraction (5 subjects per language) ==="
+echo "Job $SLURM_JOB_ID on $SLURM_NODELIST $(date)"
+
+module load u22/cuda/12.4
+source /home2/ishita/miniconda3/etc/profile.d/conda.sh
+conda activate a3_llada
+
+mkdir -p /scratch/ishita/hf_cache
+export HF_HOME=/scratch/ishita/hf_cache
+export TRANSFORMERS_CACHE=/scratch/ishita/hf_cache
+
+echo "Model dir: /share1/ishita/llama_model"
+ls /share1/ishita/llama_model
+
+# =============================================================================
+# ACTIVE: N  subjects per language (pod-agreed subset n=5)
+# =============================================================================
+python3 /home2/ishita/a3_project/scripts/extract_features_llama.py \
+    --model_dir  /share1/ishita/llama_model \
+    --data_dir   /share1/ishita/ds003643 \
+    --feat_dir   /home2/ishita/features_llama \
+    --langs      EN FR CN \
+    --subjects   sub-EN057 sub-EN058 sub-EN059 sub-EN061 sub-EN062 \
+                 sub-FR001 sub-FR002 sub-FR003 sub-FR004 sub-FR005 \
+                 sub-CN001 sub-CN002 sub-CN003 sub-CN004 sub-CN005
+
+echo "Done $(date)"
+
+
+# =============================================================================
+# ALL SUBJECTS — full ds003643 dataset (49 EN, 28 FR, 35 CN)
+# Uncomment this block and comment out the active block below to run all:
+# =============================================================================
+# python3 /home2/ishita/a3_project/scripts/extract_features_llama.py \
+#     --model_dir  /share1/ishita/llama_model \
+#     --data_dir   /share1/ishita/ds003643 \
+#     --feat_dir   /home2/ishita/features_llama \
+#     --langs      EN FR CN \
+#     --subjects   sub-EN057 sub-EN058 sub-EN059 sub-EN061 sub-EN062 \
+#                  sub-EN063 sub-EN064 sub-EN065 sub-EN067 sub-EN068 \
+#                  sub-EN069 sub-EN070 sub-EN072 sub-EN073 sub-EN074 \
+#                  sub-EN075 sub-EN076 sub-EN077 sub-EN078 sub-EN079 \
+#                  sub-EN081 sub-EN082 sub-EN083 sub-EN084 sub-EN086 \
+#                  sub-EN087 sub-EN088 sub-EN089 sub-EN091 sub-EN092 \
+#                  sub-EN093 sub-EN094 sub-EN095 sub-EN096 sub-EN097 \
+#                  sub-EN098 sub-EN099 sub-EN100 sub-EN101 sub-EN103 \
+#                  sub-EN104 sub-EN105 sub-EN106 sub-EN108 sub-EN109 \
+#                  sub-EN110 sub-EN113 sub-EN114 sub-EN115 \
+#                  sub-FR001 sub-FR002 sub-FR003 sub-FR004 sub-FR005 \
+#                  sub-FR006 sub-FR007 sub-FR008 sub-FR009 sub-FR010 \
+#                  sub-FR011 sub-FR012 sub-FR013 sub-FR014 sub-FR015 \
+#                  sub-FR016 sub-FR017 sub-FR018 sub-FR019 sub-FR020 \
+#                  sub-FR022 sub-FR023 sub-FR024 sub-FR025 sub-FR026 \
+#                  sub-FR028 sub-FR029 sub-FR030 \
+#                  sub-CN001 sub-CN002 sub-CN003 sub-CN004 sub-CN005 \
+#                  sub-CN006 sub-CN007 sub-CN008 sub-CN009 sub-CN010 \
+#                  sub-CN011 sub-CN013 sub-CN014 sub-CN015 sub-CN016 \
+#                  sub-CN017 sub-CN018 sub-CN019 sub-CN020 sub-CN021 \
+#                  sub-CN022 sub-CN023 sub-CN024 sub-CN025 sub-CN026 \
+#                  sub-CN027 sub-CN028 sub-CN029 sub-CN030 sub-CN031 \
+#                  sub-CN032 sub-CN033 sub-CN034 sub-CN036 sub-CN037
+
