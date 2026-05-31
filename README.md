@@ -54,7 +54,7 @@ python run_encoding.py
 
 ## Dataset
 [Le Petit Prince Multilingual fMRI](https://openneuro.org/datasets/ds003643) (Li, Hale & Pallier, 2021).
-Raw fMRI data not included — download from OpenNeuro:
+Raw fMRI data not included —download from OpenNeuro:
 ```bash
 aws s3 sync --no-sign-request s3://openneuro.org/ds003643 ds003643/
 ```
